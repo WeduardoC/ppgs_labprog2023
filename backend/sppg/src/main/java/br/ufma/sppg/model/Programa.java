@@ -1,8 +1,6 @@
 package br.ufma.sppg.model;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

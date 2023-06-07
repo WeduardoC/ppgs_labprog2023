@@ -23,13 +23,14 @@ public class ProgramaTest {
 
   @Autowired
   private ProgramaRepository programaRepository;
+
   @Autowired
   private DocenteRepository docenteRepository;
 
   @Test
-  public void shouldSavePrograma() {
+  public void deveSalvarPrograma() {
     Programa novoPrograma = Programa.builder()
-        .nome("Programa de Pós-Graduação em Engenharia de Eletricidade - PPGEE")
+        .nome("Programa de Pós-Graduação em Engenharia de Eletricidade")
         .build();
 
     Programa programaSalvo = programaRepository.save(novoPrograma);
@@ -39,9 +40,9 @@ public class ProgramaTest {
   }
   
   @Test
-  public void shouldSaveProgramaWithDocente() {
+  public void deveSalvarProgramaComDocente() {
     Programa novoPrograma = Programa.builder()
-        .nome("Programa de Pós-Graduação em Engenharia de Eletricidade - PPGEE")
+        .nome("Programa de Pós-Graduação em Engenharia de Eletricidade")
         .build();
     Docente novoDocente = Docente.builder()
         .nome("Geraldo Braz Junior")
@@ -50,20 +51,21 @@ public class ProgramaTest {
 
     Programa programaSalvo = programaRepository.save(novoPrograma);
     Docente docenteSalvo = docenteRepository.save(novoDocente);
+    
     List<Docente> docentes = new ArrayList<Docente>();
     docentes.add(docenteSalvo);
     programaSalvo.setDocentes(docentes);
-    Programa programaSalvoV2 = programaRepository.save(programaSalvo);
+    Programa programaSalvo2 = programaRepository.save(programaSalvo);
 
-    Assertions.assertNotNull(programaSalvoV2);
-    Assertions.assertEquals(programaSalvoV2.getDocentes().size(), 1);
+    Assertions.assertNotNull(programaSalvo2);
+    Assertions.assertEquals(programaSalvo2.getDocentes().size(), 1);
 
   }
   
   @Test
-  public void shouldAvoidDeleteProgramaWithDocente() {
+  public void deveImpedirRemoverProgramaComDocente() {
     Programa novoPrograma = Programa.builder()
-        .nome("Programa de Pós-Graduação em Engenharia de Eletricidade - PPGEE")
+        .nome("Programa de Pós-Graduação em Engenharia de Eletricidade")
         .build();
     Docente novoDocente = Docente.builder()
         .nome("Geraldo Braz Junior")
@@ -75,22 +77,21 @@ public class ProgramaTest {
     List<Docente> docentes = new ArrayList<Docente>();
     docentes.add(docenteSalvo);
     programaSalvo.setDocentes(docentes);
-    Programa programaSalvoV2 = programaRepository.save(programaSalvo);
-    Assertions.assertNotNull(programaSalvoV2);
+    Programa programaSalvo2 = programaRepository.save(programaSalvo);
+    Assertions.assertNotNull(programaSalvo2);
 
     try {
-      programaRepository.delete(programaSalvoV2);
-      Assertions.fail("Should not delete programa with docente");
+      programaRepository.delete(programaSalvo2);
+      Assertions.fail("Não deve deletar programa com docente");
     } catch (DataIntegrityViolationException e) {
       // TODO: handle exception
     }
 
     
-    Optional<Programa> optionalPrograma = programaRepository.findById(programaSalvoV2.getId());
-    Assertions.assertNotNull(optionalPrograma.isPresent());
-    List<Docente> foundDocentes = docenteRepository.findAllById(Collections.singleton(docenteSalvo.getId()));
-    Assertions.assertFalse(foundDocentes.isEmpty());
-    
+    Optional<Programa> prog = programaRepository.findById(programaSalvo2.getId());
+    Assertions.assertNotNull(prog.isPresent());
+    List<Docente> doc = docenteRepository.findAllById(Collections.singleton(docenteSalvo.getId()));
+    Assertions.assertFalse(doc.isEmpty());
 
 
   }
